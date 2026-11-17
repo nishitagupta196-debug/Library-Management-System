@@ -1,0 +1,151 @@
+import json
+import os
+
+FILE_NAME = "library.txt"
+
+
+
+def load_books():
+    if os.path.exists(FILE_NAME):
+        with open(FILE_NAME, "r") as file:
+            try:
+                return json.load(file)
+            except json.JSONDecodeError:
+                return []
+            return[]
+
+def save_books(books):
+    with open(FILE_NAME, "w") as file:
+        json.dump(books, file, indent=4)
+
+def generate_id(books):
+    if not books:
+        return "B101"
+    numbers = [int(book["id"][1:]) for book in books]
+    return "B" + str(max(numbers)+1)
+
+def add_book(books):
+    title = input("Enter book title:").strip()
+    author = input("Enter author name:").strip()
+
+    if not title or not author:
+        print("Title and author cannot be empty.")
+        return
+    book_id = generate_id(books)
+
+
+    book = {
+        "id": book_id,
+        "title": title,
+        "author": author,
+        "status": "Available",
+        "member": ""
+    } 
+    books.append(book)
+    save_books(books)
+
+
+    print(f"Book added. ID: {book_id} | {title} | {author} | Available")
+
+def issue_book(books):
+    book_id = input("Enter book ID:").strip().upper()
+    member = input("Enter member name:").strip()
+
+    for book in books:
+        if book["id"] == book_id:
+            if book["status"] == "Issued":
+                print("Book is already issued.")
+                return
+            book["status"] = "Issued"
+            book["member"] = member
+            save_books(books)
+            print(f"Book {book_id} issued to {member}. Status: Issued")
+            return
+    print(f"Book ID {book_id} not found.")
+
+
+
+def return_book(books):
+    book_id = input("Enter book ID:").strip().upper()
+
+    for book in books:   
+        if book["id"] == book_id:
+
+          if book["status"] == "Available":   
+           print("Book is already available")
+           return
+        book["status"] = "Available"
+        book["member"] = ""
+        save_books(books)
+
+        print(f"Book {book_id}returned. Status: Available")
+        return
+
+    print(f"Book ID {book_id} not found.")
+
+def search_book(books):
+    keyboard = input("Enter title or author to search: ").strip().lower()
+
+    found = False
+    for book in books:
+        if (keyboard in book["title"].lower() or keyboard in book["author"].lower()):
+                         print(f"book['d'] | {book['title']} |" f"{book['author']} {book['status']}")
+                         found = True
+        if not found:
+         print("No matching book found")
+
+def display_books(books):
+    if not books:
+         print("Library is empty.")
+         return
+    print("\n---Library Books---")
+    for book in books:
+         print(f"{book['id']} | {book['title']} |" f"{book['author']} | {book['status']}")
+
+def main():
+     books = load_books()
+
+     while True:
+        print("\n==== LIBRARY MANAGEMENT SYSTEM ====")
+        print("1.Add Book")
+        print("2.Issue Book")
+        print("3.Return Book")
+        print("4.Search Book")
+        print("5. Display ALL Books")
+        print("6.Exit")
+        choice = input("Enter yyour choice:").strip()
+
+        if choice == "1":
+            add_book(books)
+        elif choice == "2":
+            issue_book(books)
+        elif choice == "3":
+            return_book(books)
+        elif choice == "4":
+            search_book(books)
+        elif choice == "5":
+            display_books(books)
+        elif choice == "6":
+            save_books(books)
+            print("Thankyou! Library data saved")
+            break
+        else:
+            print("Invalid choice. please try again")
+
+if __name__ == "_main_":
+    main()
+                      
+                                    
+
+                         
+                         
+       
+     
+
+
+
+
+
+
+
+    
